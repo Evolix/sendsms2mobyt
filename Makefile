@@ -7,6 +7,7 @@ all: $(EXEC)
 
 sendsms2mobyt: sendsms2mobyt.c
 	$(CC) -o $@ $< $(CFLAGS)
+	strip $(EXEC)
 
 clean:
 	rm -rf *.o
