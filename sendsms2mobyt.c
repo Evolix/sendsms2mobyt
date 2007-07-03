@@ -1,4 +1,4 @@
-/* v 0.1 23.06.2007 */
+/* v 0.2 23.06.2007 */
 
 /* Copyright (c) 2007 Evolix <equipe@evolix.fr>
  * 
@@ -53,8 +53,9 @@ int urlencode (char *msg, char *encmsg) {
         }
     }
 
-    return ind;
+    return ind-1;
 }
+
 
 int main(void) {
 
@@ -94,11 +95,11 @@ int main(void) {
     }
 
     // get data
-    //memset(&buf,0,BUFSIZ);
+    memset(&buf,0,BUFSIZ);
     bytes_read = read(fd,buf,BUFSIZ);
 
     // url encoding
-    //memset(&encbuf,0,BUFSIZ);
+    memset(&encbuf,0,BUFSIZ);
     bytes_enc = urlencode(buf,encbuf);
 
     // HTTP GET request (read Mobyt doc)
@@ -112,6 +113,7 @@ int main(void) {
 
     // TODO : capture OK to verify success
     // TODO : ajust offset
+    // TODO : use recv()
     read(sock,result,198);
 
     // same with Alexandre mobile number
@@ -121,6 +123,8 @@ int main(void) {
     
     close(sock);
 
+    printf("buf (size = %zd) = \n\n%s \n\n",bytes_read,buf);
+    printf("encbuf (size = %d) = \n\n%s \n\n",bytes_enc,encbuf);
     printf("request = \n\n%s \n\nresult = \n\n%s",httpmsg,result);
     printf("request = \n\n%s \n\nresult = \n\n%s",httpmsg2,result2);
 
