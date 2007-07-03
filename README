@@ -3,3 +3,7 @@ Usage:
 
 echo "alert on router" | sendsms2mobyt
 
+Known bug :
+===========
+
+Random char insert in encbuf...
