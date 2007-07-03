@@ -1,0 +1,5 @@
+Usage:
+======
+
+echo "alert on router" | sendsms2mobyt
+
