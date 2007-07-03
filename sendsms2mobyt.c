@@ -94,9 +94,9 @@ int main(void) {
         printf("error in tcp connection init : %s\n",strerror(errsv)); 
     }
 
-    // get data
+    // get data (only 160 first char)
     memset(&buf,0,BUFSIZ);
-    bytes_read = read(fd,buf,BUFSIZ);
+    bytes_read = read(fd,buf,160);
 
     // url encoding
     memset(&encbuf,0,BUFSIZ);
