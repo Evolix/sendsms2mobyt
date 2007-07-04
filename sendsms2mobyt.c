@@ -1,4 +1,3 @@
-/* v 0.2 23.06.2007 */
 /* $Id$ */
 
 /* Copyright (c) 2007 Evolix <equipe@evolix.fr>
