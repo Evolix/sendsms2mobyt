@@ -1,4 +1,5 @@
 /* v 0.2 23.06.2007 */
+/* $Rev$ */
 
 /* Copyright (c) 2007 Evolix <equipe@evolix.fr>
  * 
