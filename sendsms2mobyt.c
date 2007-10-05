@@ -74,7 +74,7 @@ int main(void) {
     int sock;
     int errsv;
 
-    FILE *conf = fopen("sendsms2mobyt.conf","r");
+    FILE *conf = fopen("/etc/sendsms2mobyt.conf","r");
     char line[BUFSIZ];
 
     char *number1=NULL;
@@ -163,7 +163,7 @@ int main(void) {
     errsv = errno;
 
     if (sock == -1) {
-        sprintf(tmpmsg,"error in socket init: %s\n",strerror(errsv));
+        snprintf(tmpmsg,23+strlen(strerror(errsv)),"error in socket init: %s\n",strerror(errsv));
         myerror(tmpmsg);
         exit(-1);
     }
@@ -171,7 +171,7 @@ int main(void) {
     // TCP connection init
     if (connect(sock,(struct sockaddr *)&sa_in,sizeof(struct sockaddr)) == -1) {
         errsv = errno;
-        sprintf(tmpmsg,"error in tcp connection init: %s\n",strerror(errsv));
+        snprintf(tmpmsg,33+strlen(strerror(errsv)),"error in tcp connection init: %s\n",strerror(errsv));
         myerror(tmpmsg);
         exit(-1);
     }
@@ -209,12 +209,11 @@ int main(void) {
     subresult = strstr(result,"OK ");
     if (subresult) {
         sscanf(subresult,"OK %s",subsubresult);
-        sprintf(tmpmsg,"send sms with credit %s\n",subsubresult);
+        snprintf(tmpmsg,22+strlen(subsubresult),"send sms with credit %s\n",subsubresult);
         syslog(LOG_INFO,tmpmsg);
     } else {
-        sprintf(tmpmsg,"error while sending");
-        myerror(tmpmsg);
-        sprintf(tmpmsg,"error while sending :\n%s",result);
+        myerror("error while sending");
+        snprintf(tmpmsg,22+strlen(result),"error while sending :\n%s",result);
         errx(1, tmpmsg);
         exit(-1);
     }
