@@ -1,7 +1,9 @@
 /* $Id$ */
 
-/* Copyright (c) 2007 Evolix <equipe@evolix.fr>
- * 
+/*
+ * Copyright (c) 2007 Evolix <equipe@evolix.fr>
+ * Copyright (c) 2007 Gregory Colpart <reg@evolix.fr>
+ *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
@@ -24,6 +26,10 @@
 #include <errno.h>
 #include <unistd.h>
 #include <unistd.h>
+#include <syslog.h>
+#include <stdlib.h>
+#include <string.h>
+#include <err.h>
 
 // URL enconding (RFC 1738)
 int urlencode (char *msg, char *encmsg) {
@@ -56,16 +62,90 @@ int urlencode (char *msg, char *encmsg) {
     return ind-1;
 }
 
+// Display error
+void myerror(char *msg) {
+
+    syslog(LOG_ERR,"fatal error: %s\n",msg);
+
+}
 
 int main(void) {
 
     int sock;
     int errsv;
 
+    FILE *conf = fopen("sendsms2mobyt.conf","r");
+    char line[BUFSIZ];
+
+    char *number1=NULL;
+    char *number2=NULL;
+    char *number3=NULL;
+    char *ip="127.0.0.1";
+    char *port="80";
+    char *host="localhost";
+    char *user="foo";
+    char *pass="bar";
+
+    while (fgets(line,BUFSIZ*sizeof(char),conf)) {
+
+        size_t slen,len = strlen(line);
+        char *first = calloc(len, sizeof(char));
+        char *second = calloc(len, sizeof(char));
+
+        slen = sscanf(line, "%s %s", first, second);
+
+        // TODO : be more clean...
+        if ((len < 2) || (!second) || (first[0] == '#')) {
+            continue;
+        } else {
+            //printf("[%d][%d] line = %s %s\n",len,slen,first,second);
+            // TODO : utiliser switch/case ?
+            if (strcmp(first,"user") == 0) {
+                user = strdup(second);
+            } else if (strcmp(first,"pass") == 0) {
+                pass = strdup(second);
+            } else if (strcmp(first,"number1") == 0) {
+                number1 = strdup(second);
+            } else if (strcmp(first,"number2") == 0) {
+                number2 = strdup(second);
+            } else if (strcmp(first,"number3") == 0) {
+                number3 = strdup(second);
+            } else if (strcmp(first,"ip") == 0) {
+                ip = strdup(second);
+            } else if (strcmp(first,"port") == 0) {
+                port = strdup(second);
+            } else if (strcmp(first,"host") == 0) {
+                host = strdup(second);
+            } else {
+                myerror("parse error");
+                exit(-1);
+            }
+        }
+
+        free(first);
+        free(second);
+    }
+
+    fclose(conf);
+
+    // debug
+    /*
+    printf("user = %s\n",user);
+    printf("pass = %s\n",pass);
+    printf("number1 = %s\n",number1);
+    printf("number2 = %s\n",number2);
+    printf("number3 = %s\n",number3);
+    printf("ip = %s\n",ip);
+    printf("port = %s\n",port);
+    printf("host = %s\n",host);
+    */
+
+    char tmpmsg[BUFSIZ];
+
     char buf[BUFSIZ];
     char encbuf[BUFSIZ];
-    char httpmsg[BUFSIZ], httpmsg2[BUFSIZ];
-    char result[BUFSIZ], result2[BUFSIZ];
+    char httpmsg[BUFSIZ];
+    char result[BUFSIZ];
     size_t bytes_read;
     int bytes_enc;
     // designed to be piped
@@ -73,25 +153,27 @@ int main(void) {
 
     struct sockaddr_in sa_in;
 
-    // Hum, 194.185.22.170 is actual IP of Mobyt
-    // TODO : use hostname
     memset(&sa_in,0,sizeof(struct sockaddr_in));
     sa_in.sin_family = AF_INET;
-    sa_in.sin_port = htons(80);
-    sa_in.sin_addr.s_addr = inet_addr("194.185.22.170");
+    sa_in.sin_port = htons(atoi(port));
+    sa_in.sin_addr.s_addr = inet_addr(ip);
 
     // socket init 
     sock = socket(PF_INET, SOCK_STREAM, 0);
     errsv = errno;
 
     if (sock == -1) {
-        printf("error in socket init : %s\n",strerror(errsv)); 
+        sprintf(tmpmsg,"error in socket init: %s\n",strerror(errsv));
+        myerror(tmpmsg);
+        exit(-1);
     }
 
     // TCP connection init
     if (connect(sock,(struct sockaddr *)&sa_in,sizeof(struct sockaddr)) == -1) {
         errsv = errno;
-        printf("error in tcp connection init : %s\n",strerror(errsv)); 
+        sprintf(tmpmsg,"error in tcp connection init: %s\n",strerror(errsv));
+        myerror(tmpmsg);
+        exit(-1);
     }
 
     // get data (only 160 first char)
@@ -102,33 +184,63 @@ int main(void) {
     memset(&encbuf,0,BUFSIZ);
     bytes_enc = urlencode(buf,encbuf);
 
+    // debug
+    //printf("buf (size = %zd) = \n\n%s \n\n",bytes_read,buf);
+    //printf("encbuf (size = %d) = \n\n%s \n\n",bytes_enc,encbuf);
+
     // HTTP GET request (read Mobyt doc)
-    // 167 is length of request without encbuf (*hack*, *hack*)
-    // hey, you see my mobile number: +33688291152
-    // TODO : put user/pass and mobile numbers in conffile
-    snprintf(httpmsg,167+strlen(encbuf),"GET /sms/send.php?user=F02568&pass=snhom482&rcpt=%%2B33688291152&data=%s&sender=%%2B33491854329&qty=l HTTP/1.1\nHost: multilevel.mobyt.fr\nUser-Agent: Evolix SMS Agent\n\n",encbuf);
+    // 123 is length of request without var
+    snprintf(httpmsg,123+strlen(user)+strlen(pass)+strlen(number1)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=l HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number1,encbuf,host);
 
     // write/read datas
     write(sock,httpmsg,strlen(httpmsg));
 
-    // TODO : capture OK to verify success
-    // TODO : ajust offset
-    // TODO : use recv()
-    read(sock,result,198);
+    bytes_read = read(sock,result,1024);
+    result[bytes_read-1] = '\0';
 
-    // same with Alexandre mobile number
-    snprintf(httpmsg2,167+strlen(encbuf),"GET /sms/send.php?user=F02568&pass=snhom482&rcpt=%%2B33632168886&data=%s&sender=%%2B33491854329&qty=l HTTP/1.1\nHost: multilevel.mobyt.fr\nUser-Agent: Evolix SMS Agent\n\n",encbuf);
-    write(sock,httpmsg2,strlen(httpmsg2));
-    read(sock,result2,198);
-    
+    // debug
+    //printf("request = \n\n%s \n\nresult = \n\n%s",httpmsg,result);
+
+    size_t len = strlen(result);
+    char *subresult = calloc(len, sizeof(char));
+    char *subsubresult = calloc(len, sizeof(char));
+
+    // TODO : capture OK/KO to verify success
+    subresult = strstr(result,"OK ");
+    if (subresult) {
+        sscanf(subresult,"OK %s",subsubresult);
+        sprintf(tmpmsg,"send sms with credit %s\n",subsubresult);
+        syslog(LOG_INFO,tmpmsg);
+    } else {
+        sprintf(tmpmsg,"error while sending");
+        myerror(tmpmsg);
+        sprintf(tmpmsg,"error while sending :\n%s",result);
+        errx(1, tmpmsg);
+        exit(-1);
+    }
+
+    if (number2) {
+
+        snprintf(httpmsg,123+strlen(user)+strlen(pass)+strlen(number2)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=l HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number2,encbuf,host);
+        write(sock,httpmsg,strlen(httpmsg));
+        bytes_read = read(sock,result,1024);
+        result[bytes_read-1] = '\0';
+        // debug
+        //printf("request = \n\n%s \n\nresult = \n\n%s",httpmsg,result);
+    }
+
+    if (number3) {
+
+        snprintf(httpmsg,123+strlen(user)+strlen(pass)+strlen(number3)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=l HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number3,encbuf,host);
+        write(sock,httpmsg,strlen(httpmsg));
+        bytes_read = read(sock,result,1024);
+        result[bytes_read-1] = '\0';
+        // debug
+        //printf("request = \n\n%s \n\nresult = \n\n%s",httpmsg,result);
+    }
+
     close(sock);
 
-    printf("buf (size = %zd) = \n\n%s \n\n",bytes_read,buf);
-    printf("encbuf (size = %d) = \n\n%s \n\n",bytes_enc,encbuf);
-    printf("request = \n\n%s \n\nresult = \n\n%s",httpmsg,result);
-    printf("request = \n\n%s \n\nresult = \n\n%s",httpmsg2,result2);
-
     return 0;
-
 }
 
