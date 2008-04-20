@@ -36,7 +36,7 @@ int urlencode (char *msg, char *encmsg) {
 
     char *h = "0123456789abcdef";
     unsigned int i;
-    char c;
+    unsigned char c;
     int ind=0;
 
     for (i=0;i<strlen(msg);i++) {
@@ -183,6 +183,8 @@ int main(void) {
     // url encoding
     memset(&encbuf,0,BUFSIZ);
     bytes_enc = urlencode(buf,encbuf);
+    // limit encbuf to 160 first char
+    encbuf[159] = '\0';
 
     // debug
     //printf("buf (size = %zd) = \n\n%s \n\n",bytes_read,buf);
