@@ -192,7 +192,7 @@ int main(void) {
 
     // HTTP GET request (read Mobyt doc)
     // 123 is length of request without var
-    snprintf(httpmsg,123+strlen(user)+strlen(pass)+strlen(number1)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=l HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number1,encbuf,host);
+    snprintf(httpmsg,123+strlen(user)+strlen(pass)+strlen(number1)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=n HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number1,encbuf,host);
 
     // write/read datas
     write(sock,httpmsg,strlen(httpmsg));
@@ -222,7 +222,7 @@ int main(void) {
 
     if (number2) {
 
-        snprintf(httpmsg,123+strlen(user)+strlen(pass)+strlen(number2)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=l HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number2,encbuf,host);
+        snprintf(httpmsg,123+strlen(user)+strlen(pass)+strlen(number2)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=n HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number2,encbuf,host);
         write(sock,httpmsg,strlen(httpmsg));
         bytes_read = read(sock,result,1024);
         result[bytes_read-1] = '\0';
@@ -232,7 +232,7 @@ int main(void) {
 
     if (number3) {
 
-        snprintf(httpmsg,123+strlen(user)+strlen(pass)+strlen(number3)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=l HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number3,encbuf,host);
+        snprintf(httpmsg,123+strlen(user)+strlen(pass)+strlen(number3)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=n HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number3,encbuf,host);
         write(sock,httpmsg,strlen(httpmsg));
         bytes_read = read(sock,result,1024);
         result[bytes_read-1] = '\0';

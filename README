@@ -3,6 +3,12 @@ Usage:
 
 echo "alert on router" | sendsms2mobyt
 
+Quality :
+
+qty=l => direct SMS
+qty=ll => low-cost (need increase length...)
+qty=n => high-quality
+
 Known bug:
 ==========
 
