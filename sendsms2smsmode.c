@@ -208,11 +208,11 @@ int main(void) {
     char *subsubresult = calloc(len, sizeof(char));
 
     // TODO : capture OK/KO to verify success
-    subresult = strstr(result,"OK ");
+    subresult = strstr(result,"0 | ");
     if (subresult) {
-        sscanf(subresult,"OK %s",subsubresult);
-        snprintf(tmpmsg,22+strlen(subsubresult),"send sms with credit %s\n",subsubresult);
-        syslog(LOG_INFO,tmpmsg);
+        sscanf(subresult,"0 | %s",subsubresult);
+        //snprintf(tmpmsg,24+strlen(subsubresult),"send sms with success: %s\n",subsubresult);
+        //syslog(LOG_INFO,tmpmsg);
     } else {
         myerror("error while sending");
         snprintf(tmpmsg,22+strlen(result),"error while sending :\n%s",result);
@@ -222,7 +222,7 @@ int main(void) {
 
     if (number2) {
 
-        snprintf(httpmsg,103+strlen(user)+strlen(pass)+strlen(number2)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=n HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number2,encbuf,host);
+	snprintf(httpmsg,103+strlen(user)+strlen(pass)+strlen(number1)+strlen(host)+strlen(encbuf),"GET /http/1.6/sendSMS.do?pseudo=%s&pass=%s&numero=%s&message=%s HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number1,encbuf,host);
         write(sock,httpmsg,strlen(httpmsg));
         bytes_read = read(sock,result,1024);
         result[bytes_read-1] = '\0';
@@ -232,7 +232,7 @@ int main(void) {
 
     if (number3) {
 
-        snprintf(httpmsg,103+strlen(user)+strlen(pass)+strlen(number3)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=n HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number3,encbuf,host);
+	snprintf(httpmsg,103+strlen(user)+strlen(pass)+strlen(number1)+strlen(host)+strlen(encbuf),"GET /http/1.6/sendSMS.do?pseudo=%s&pass=%s&numero=%s&message=%s HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number1,encbuf,host);
         write(sock,httpmsg,strlen(httpmsg));
         bytes_read = read(sock,result,1024);
         result[bytes_read-1] = '\0';
