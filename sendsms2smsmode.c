@@ -222,7 +222,7 @@ int main(void) {
 
     if (number2) {
 
-	snprintf(httpmsg,103+strlen(user)+strlen(pass)+strlen(number1)+strlen(host)+strlen(encbuf),"GET /http/1.6/sendSMS.do?pseudo=%s&pass=%s&numero=%s&message=%s HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number1,encbuf,host);
+	snprintf(httpmsg,103+strlen(user)+strlen(pass)+strlen(number2)+strlen(host)+strlen(encbuf),"GET /http/1.6/sendSMS.do?pseudo=%s&pass=%s&numero=%s&message=%s HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number2,encbuf,host);
         write(sock,httpmsg,strlen(httpmsg));
         bytes_read = read(sock,result,1024);
         result[bytes_read-1] = '\0';
@@ -232,7 +232,7 @@ int main(void) {
 
     if (number3) {
 
-	snprintf(httpmsg,103+strlen(user)+strlen(pass)+strlen(number1)+strlen(host)+strlen(encbuf),"GET /http/1.6/sendSMS.do?pseudo=%s&pass=%s&numero=%s&message=%s HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number1,encbuf,host);
+	snprintf(httpmsg,103+strlen(user)+strlen(pass)+strlen(number3)+strlen(host)+strlen(encbuf),"GET /http/1.6/sendSMS.do?pseudo=%s&pass=%s&numero=%s&message=%s HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number3,encbuf,host);
         write(sock,httpmsg,strlen(httpmsg));
         bytes_read = read(sock,result,1024);
         result[bytes_read-1] = '\0';
