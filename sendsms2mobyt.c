@@ -80,6 +80,7 @@ int main(void) {
     char *number1=NULL;
     char *number2=NULL;
     char *number3=NULL;
+    char *number4=NULL;
     char *ip="127.0.0.1";
     char *port="80";
     char *host="localhost";
@@ -110,6 +111,8 @@ int main(void) {
                 number2 = strdup(second);
             } else if (strcmp(first,"number3") == 0) {
                 number3 = strdup(second);
+            } else if (strcmp(first,"number4") == 0) {
+                number4 = strdup(second);
             } else if (strcmp(first,"ip") == 0) {
                 ip = strdup(second);
             } else if (strcmp(first,"port") == 0) {
@@ -278,6 +281,32 @@ int main(void) {
         // debug
         //printf("request = \n\n%s \n\nresult = \n\n%s",httpmsg,result);
     }
+
+    if (number4) {
+
+        // socket init 
+        sock = socket(PF_INET, SOCK_STREAM, 0);
+        errsv = errno;
+        if (sock == -1) {
+            snprintf(tmpmsg,23+strlen(strerror(errsv)),"error in socket init: %s\n",strerror(errsv));
+            myerror(tmpmsg);
+            exit(-1);
+        }
+        // TCP connection init
+        if (connect(sock,(struct sockaddr *)&sa_in,sizeof(struct sockaddr)) == -1) {
+            errsv = errno;
+            snprintf(tmpmsg,33+strlen(strerror(errsv)),"error in tcp connection init: %s\n",strerror(errsv));
+            myerror(tmpmsg);
+            exit(-1);
+        }
+
+        snprintf(httpmsg,123+strlen(user)+strlen(pass)+strlen(number4)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=n HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number4,encbuf,host);
+        write(sock,httpmsg,strlen(httpmsg));
+        bytes_read = read(sock,result,1024);
+        result[bytes_read-1] = '\0';
+
+        close(sock);
+
         // debug
         //printf("request = \n\n%s \n\nresult = \n\n%s",httpmsg,result);
     }

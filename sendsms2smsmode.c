@@ -80,6 +80,7 @@ int main(void) {
     char *number1=NULL;
     char *number2=NULL;
     char *number3=NULL;
+    char *number4=NULL;
     char *ip="127.0.0.1";
     char *port="80";
     char *host="localhost";
@@ -110,6 +111,8 @@ int main(void) {
                 number2 = strdup(second);
             } else if (strcmp(first,"number3") == 0) {
                 number3 = strdup(second);
+            } else if (strcmp(first,"number4") == 0) {
+                number4 = strdup(second);
             } else if (strcmp(first,"ip") == 0) {
                 ip = strdup(second);
             } else if (strcmp(first,"port") == 0) {
@@ -135,6 +138,7 @@ int main(void) {
     printf("number1 = %s\n",number1);
     printf("number2 = %s\n",number2);
     printf("number3 = %s\n",number3);
+    printf("number4 = %s\n",number3);
     printf("ip = %s\n",ip);
     printf("port = %s\n",port);
     printf("host = %s\n",host);
@@ -233,6 +237,16 @@ int main(void) {
     if (number3) {
 
 	snprintf(httpmsg,103+strlen(user)+strlen(pass)+strlen(number3)+strlen(host)+strlen(encbuf),"GET /http/1.6/sendSMS.do?pseudo=%s&pass=%s&numero=%s&message=%s HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number3,encbuf,host);
+        write(sock,httpmsg,strlen(httpmsg));
+        bytes_read = read(sock,result,1024);
+        result[bytes_read-1] = '\0';
+        // debug
+        //printf("request = \n\n%s \n\nresult = \n\n%s",httpmsg,result);
+    }
+
+    if (number4) {
+
+	snprintf(httpmsg,103+strlen(user)+strlen(pass)+strlen(number4)+strlen(host)+strlen(encbuf),"GET /http/1.6/sendSMS.do?pseudo=%s&pass=%s&numero=%s&message=%s HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number4,encbuf,host);
         write(sock,httpmsg,strlen(httpmsg));
         bytes_read = read(sock,result,1024);
         result[bytes_read-1] = '\0';
