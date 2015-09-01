@@ -227,6 +227,7 @@ int main(void) {
     if (number2) {
 
 	snprintf(httpmsg,103+strlen(user)+strlen(pass)+strlen(number2)+strlen(host)+strlen(encbuf),"GET /http/1.6/sendSMS.do?pseudo=%s&pass=%s&numero=%s&message=%s HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number2,encbuf,host);
+        // We can use the same socket because SMSMODE API support Keepalive
         write(sock,httpmsg,strlen(httpmsg));
         bytes_read = read(sock,result,1024);
         result[bytes_read-1] = '\0';
@@ -237,6 +238,7 @@ int main(void) {
     if (number3) {
 
 	snprintf(httpmsg,103+strlen(user)+strlen(pass)+strlen(number3)+strlen(host)+strlen(encbuf),"GET /http/1.6/sendSMS.do?pseudo=%s&pass=%s&numero=%s&message=%s HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number3,encbuf,host);
+        // We can use the same socket because SMSMODE API support Keepalive
         write(sock,httpmsg,strlen(httpmsg));
         bytes_read = read(sock,result,1024);
         result[bytes_read-1] = '\0';
@@ -247,6 +249,7 @@ int main(void) {
     if (number4) {
 
 	snprintf(httpmsg,103+strlen(user)+strlen(pass)+strlen(number4)+strlen(host)+strlen(encbuf),"GET /http/1.6/sendSMS.do?pseudo=%s&pass=%s&numero=%s&message=%s HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number4,encbuf,host);
+        // We can use the same socket because SMSMODE API support Keepalive
         write(sock,httpmsg,strlen(httpmsg));
         bytes_read = read(sock,result,1024);
         result[bytes_read-1] = '\0';
@@ -254,6 +257,7 @@ int main(void) {
         //printf("request = \n\n%s \n\nresult = \n\n%s",httpmsg,result);
     }
 
+    // TCP close
     close(sock);
 
     return 0;
