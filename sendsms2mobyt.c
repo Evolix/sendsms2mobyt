@@ -161,13 +161,11 @@ int main(void) {
     // socket init 
     sock = socket(PF_INET, SOCK_STREAM, 0);
     errsv = errno;
-
     if (sock == -1) {
         snprintf(tmpmsg,23+strlen(strerror(errsv)),"error in socket init: %s\n",strerror(errsv));
         myerror(tmpmsg);
         exit(-1);
     }
-
     // TCP connection init
     if (connect(sock,(struct sockaddr *)&sa_in,sizeof(struct sockaddr)) == -1) {
         errsv = errno;
@@ -200,6 +198,9 @@ int main(void) {
     bytes_read = read(sock,result,1024);
     result[bytes_read-1] = '\0';
 
+    // TCP close
+    close(sock);
+
     // debug
     //printf("request = \n\n%s \n\nresult = \n\n%s",httpmsg,result);
 
@@ -222,25 +223,65 @@ int main(void) {
 
     if (number2) {
 
+        // socket init 
+        sock = socket(PF_INET, SOCK_STREAM, 0);
+        errsv = errno;
+        if (sock == -1) {
+            snprintf(tmpmsg,23+strlen(strerror(errsv)),"error in socket init: %s\n",strerror(errsv));
+            myerror(tmpmsg);
+            exit(-1);
+        }
+        // TCP connection init
+        if (connect(sock,(struct sockaddr *)&sa_in,sizeof(struct sockaddr)) == -1) {
+            errsv = errno;
+            snprintf(tmpmsg,33+strlen(strerror(errsv)),"error in tcp connection init: %s\n",strerror(errsv));
+            myerror(tmpmsg);
+            exit(-1);
+        }
+
         snprintf(httpmsg,123+strlen(user)+strlen(pass)+strlen(number2)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=n HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number2,encbuf,host);
         write(sock,httpmsg,strlen(httpmsg));
         bytes_read = read(sock,result,1024);
         result[bytes_read-1] = '\0';
+
+        close(sock);
+
         // debug
         //printf("request = \n\n%s \n\nresult = \n\n%s",httpmsg,result);
     }
 
     if (number3) {
 
+        // socket init 
+        sock = socket(PF_INET, SOCK_STREAM, 0);
+        errsv = errno;
+        if (sock == -1) {
+            snprintf(tmpmsg,23+strlen(strerror(errsv)),"error in socket init: %s\n",strerror(errsv));
+            myerror(tmpmsg);
+            exit(-1);
+        }
+        // TCP connection init
+        if (connect(sock,(struct sockaddr *)&sa_in,sizeof(struct sockaddr)) == -1) {
+            errsv = errno;
+            snprintf(tmpmsg,33+strlen(strerror(errsv)),"error in tcp connection init: %s\n",strerror(errsv));
+            myerror(tmpmsg);
+            exit(-1);
+        }
+
         snprintf(httpmsg,123+strlen(user)+strlen(pass)+strlen(number3)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=n HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number3,encbuf,host);
         write(sock,httpmsg,strlen(httpmsg));
         bytes_read = read(sock,result,1024);
         result[bytes_read-1] = '\0';
+
+        close(sock);
+
+        // debug
+        //printf("request = \n\n%s \n\nresult = \n\n%s",httpmsg,result);
+    }
         // debug
         //printf("request = \n\n%s \n\nresult = \n\n%s",httpmsg,result);
     }
 
-    close(sock);
 
     return 0;
 }
