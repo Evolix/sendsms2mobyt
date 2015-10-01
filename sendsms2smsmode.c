@@ -215,8 +215,8 @@ int main(void) {
     subresult = strstr(result,"0 | ");
     if (subresult) {
         sscanf(subresult,"0 | %s",subsubresult);
-        //snprintf(tmpmsg,24+strlen(subsubresult),"send sms with success: %s\n",subsubresult);
-        //syslog(LOG_INFO,tmpmsg);
+        snprintf(tmpmsg,24+strlen(subsubresult),"send sms with success: %s\n",subsubresult);
+        syslog(LOG_INFO,tmpmsg);
     } else {
         myerror("error while sending");
         snprintf(tmpmsg,22+strlen(result),"error while sending :\n%s",result);
