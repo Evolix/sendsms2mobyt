@@ -86,6 +86,7 @@ int main(void) {
     char *host="localhost";
     char *user="foo";
     char *pass="bar";
+    char *sender="33491010203";
 
     while (fgets(line,BUFSIZ*sizeof(char),conf)) {
 
@@ -119,6 +120,8 @@ int main(void) {
                 port = strdup(second);
             } else if (strcmp(first,"host") == 0) {
                 host = strdup(second);
+            } else if (strcmp(first,"sender") == 0) {
+                sender = strdup(second);
             } else {
                 myerror("parse error");
                 exit(-1);
@@ -141,6 +144,7 @@ int main(void) {
     printf("ip = %s\n",ip);
     printf("port = %s\n",port);
     printf("host = %s\n",host);
+    printf("host = %s\n",sender);
     */
 
     char tmpmsg[BUFSIZ];
@@ -193,7 +197,7 @@ int main(void) {
 
     // HTTP GET request (read Mobyt doc)
     // 123 is length of request without var
-    snprintf(httpmsg,123+strlen(user)+strlen(pass)+strlen(number1)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=n HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number1,encbuf,host);
+    snprintf(httpmsg,112+strlen(user)+strlen(pass)+strlen(number1)+strlen(host)+strlen(encbuf)+strlen(sender),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B%s&qty=n HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number1,encbuf,sender,host);
 
     // write/read datas
     write(sock,httpmsg,strlen(httpmsg));
@@ -242,7 +246,7 @@ int main(void) {
             exit(-1);
         }
 
-        snprintf(httpmsg,123+strlen(user)+strlen(pass)+strlen(number2)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=n HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number2,encbuf,host);
+        snprintf(httpmsg,112+strlen(user)+strlen(pass)+strlen(number2)+strlen(host)+strlen(encbuf)+strlen(sender),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B%s&qty=n HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number2,encbuf,sender,host);
         write(sock,httpmsg,strlen(httpmsg));
         bytes_read = read(sock,result,1024);
         result[bytes_read-1] = '\0';
@@ -271,7 +275,7 @@ int main(void) {
             exit(-1);
         }
 
-        snprintf(httpmsg,123+strlen(user)+strlen(pass)+strlen(number3)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=n HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number3,encbuf,host);
+        snprintf(httpmsg,112+strlen(user)+strlen(pass)+strlen(number3)+strlen(host)+strlen(encbuf)+strlen(sender),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B%s&qty=n HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number3,encbuf,sender,host);
         write(sock,httpmsg,strlen(httpmsg));
         bytes_read = read(sock,result,1024);
         result[bytes_read-1] = '\0';
@@ -300,7 +304,7 @@ int main(void) {
             exit(-1);
         }
 
-        snprintf(httpmsg,123+strlen(user)+strlen(pass)+strlen(number4)+strlen(host)+strlen(encbuf),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B33491059254&qty=n HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number4,encbuf,host);
+        snprintf(httpmsg,112+strlen(user)+strlen(pass)+strlen(number4)+strlen(host)+strlen(encbuf)+strlen(sender),"GET /sms/send.php?user=%s&pass=%s&rcpt=%%2B%s&data=%s&sender=%%2B%s&qty=n HTTP/1.1\nHost: %s\nUser-Agent: Evolix SMS Agent\n\n",user,pass,number4,encbuf,sender,host);
         write(sock,httpmsg,strlen(httpmsg));
         bytes_read = read(sock,result,1024);
         result[bytes_read-1] = '\0';
